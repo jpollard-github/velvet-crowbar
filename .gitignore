@@ -1,0 +1,45 @@
+# Dependencies and framework output
+node_modules/
+.next/
+out/
+
+# Environment and secrets (the example is intentionally committed)
+.env
+.env.*
+!.env.example
+
+# Test and browser output
+coverage/
+playwright-report/
+test-results/
+.vitest/
+
+# Local databases and dumps
+.data/
+postgres-data/
+*.dump
+*.sql.gz
+
+# Review exports (keep the directory placeholder)
+artifacts/exports/*
+!artifacts/exports/.gitkeep
+
+# Vercel local metadata
+.vercel/
+
+# Logs and caches
+*.log
+.eslintcache
+*.tsbuildinfo
+.turbo/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local task source retained from the pre-Git baseline
+codex-prompt-*.md
+codex-prompts/

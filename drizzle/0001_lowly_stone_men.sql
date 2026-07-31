@@ -1,0 +1,1 @@
+ALTER TABLE "entries" ADD CONSTRAINT "entries_source_entry_id_fk" FOREIGN KEY ("source_entry_id") REFERENCES "public"."entries"("id") ON DELETE set null ON UPDATE no action;

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: velvet_crowbar
+          POSTGRES_USER: velvet_crowbar
+          POSTGRES_PASSWORD: velvet_crowbar
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U velvet_crowbar -d velvet_crowbar"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://velvet_crowbar:velvet_crowbar@127.0.0.1:54329/velvet_crowbar
+      BETTER_AUTH_SECRET: ci-only-secret-with-at-least-thirty-two-characters
+      BETTER_AUTH_URL: http://127.0.0.1:3100
+      ADMIN_EMAIL: editor@example.test
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+      VERCEL_ENV: development
+      ADMIN_BOOTSTRAP_EMAIL: editor@example.test
+      ADMIN_BOOTSTRAP_PASSWORD: synthetic-ci-password-only
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: corepack enable
+      - run: corepack prepare pnpm@10.34.5 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate
+      - run: pnpm admin:bootstrap
+      - run: pnpm db:seed
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm verify:full
