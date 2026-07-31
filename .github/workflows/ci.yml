@@ -37,12 +37,15 @@ jobs:
       ADMIN_BOOTSTRAP_PASSWORD: synthetic-ci-password-only
     steps:
       - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+          run_install: false
       - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: pnpm
-      - run: corepack enable
-      - run: corepack prepare pnpm@10.34.5 --activate
+          cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:migrate
       - run: pnpm admin:bootstrap
