@@ -103,6 +103,8 @@ desktop and 390px, no horizontal overflow, keyboard/focus and reduced-motion
 checks. Preserve public/private isolation coverage. Never claim an unrun check
 passed.
 
+Prefer vitest unit tests, React Testing Library, Mock Service Worker for integration tests. Let E2E Playwright tests be no more than 15% of the total tests in the repo. If you hit this limit, notify me in the prompt.
+
 ## Git, archive, and review discipline
 
 Preserve user work. Do not reset, rebase, commit, push, add a remote, or deploy

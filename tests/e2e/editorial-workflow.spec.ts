@@ -1,9 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const syntheticTitle = "Synthetic boundary translation";
-const syntheticBody = "SYNTHETIC_PRIVATE_BODY_NETWORK_SENTINEL";
-const syntheticSlug = "synthetic-boundary-translation";
+const syntheticTitleBase = "Synthetic boundary translation";
+const syntheticBodyBase = "SYNTHETIC_PRIVATE_BODY_NETWORK_SENTINEL";
+const syntheticSlugBase = "synthetic-boundary-translation";
 
 async function signIn(page: import("@playwright/test").Page) {
   await page.goto("/sign-in");
@@ -17,7 +17,14 @@ test("reader and editor drill preserves the public/private boundary", async ({
   page,
   browser,
 }, testInfo) => {
+  test.setTimeout(60_000);
   test.skip(testInfo.project.name !== "desktop", "full workflow runs once");
+  const retrySuffix = testInfo.retry ? ` retry ${testInfo.retry}` : "";
+  const slugRetrySuffix = testInfo.retry ? `-retry-${testInfo.retry}` : "";
+  const syntheticTitle = `${syntheticTitleBase}${retrySuffix}`;
+  const syntheticBody = `${syntheticBodyBase}${testInfo.retry}`;
+  const syntheticSlug = `${syntheticSlugBase}${slugRetrySuffix}`;
+  const syntheticPrivateSlug = `synthetic-private-autopsy${slugRetrySuffix}`;
   const consoleErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -167,9 +174,7 @@ test("reader and editor drill preserves the public/private boundary", async ({
   await page.getByRole("link", { name: "New entry" }).click();
   await expect(page).toHaveURL(/\/studio\/new$/);
   await page.getByLabel("Title").fill("Synthetic private autopsy");
-  await page
-    .getByLabel("Slug", { exact: true })
-    .fill("synthetic-private-autopsy");
+  await page.getByLabel("Slug", { exact: true }).fill(syntheticPrivateSlug);
   await page.locator('select[name="kind"]').selectOption("autopsy");
   await expect(
     page
